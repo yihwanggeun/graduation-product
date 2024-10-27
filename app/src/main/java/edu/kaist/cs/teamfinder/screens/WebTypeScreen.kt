@@ -198,7 +198,7 @@ fun WebTypeScreen(navController: NavController) {
 fun gettypeproject(projectList : MutableList<Project>, ctx : Context,frame : String){
     var gson = GsonBuilder().setLenient().create()
     val retrofit = Retrofit.Builder()
-        .baseUrl("https://75fb-192-249-19-234.ngrok-free.app/") // API의 베이스 URL을 설정합니다
+        .baseUrl("http://192.168.0.2:8080/") // API의 베이스 URL을 설정합니다
         .addConverterFactory(ScalarsConverterFactory.create())
         .addConverterFactory(GsonConverterFactory.create(gson)) // 문자열 응답을 처리하기 위해 ScalarsConverterFactory를 사용합니다
         .build()

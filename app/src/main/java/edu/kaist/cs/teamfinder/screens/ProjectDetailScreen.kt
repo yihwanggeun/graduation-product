@@ -43,8 +43,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.gson.GsonBuilder
 import edu.kaist.cs.teamfinder.ApiService
+import edu.kaist.cs.teamfinder.ApplicationResponse
+import edu.kaist.cs.teamfinder.Globals
 import edu.kaist.cs.teamfinder.Project
+import edu.kaist.cs.teamfinder.ProjectApplication
+import edu.kaist.cs.teamfinder.ProjectResponse
 import edu.kaist.cs.teamfinder.R
+import edu.kaist.cs.teamfinder.apiService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -55,7 +60,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 
 @Composable
 fun ProjectDetailScreen(projectName: String) {
-    val detailproject = remember { mutableStateListOf<Project>() }
+    val detailproject = remember { mutableStateListOf<ProjectResponse>() }
     val context = LocalContext.current
     LaunchedEffect(projectName) {
         try {
@@ -70,7 +75,7 @@ fun ProjectDetailScreen(projectName: String) {
 
         Log.i("TAG", detailproject[0].projectName)
         println(detailproject[0].projectRequire)
-        val parts = detailproject[0].projectRequire.split(":")
+        val parts = detailproject[0].projectRequire.split(",")
 
         val part1 = parts[0]
         val part2 = parts[1]
@@ -248,7 +253,24 @@ fun ProjectDetailScreen(projectName: String) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Center) {
                     Button(
-                        onClick = {},
+                        onClick = {
+                            val application = ProjectApplication(detailproject[0].projectId, Globals.globalEmail, "Test")
+
+                            apiService.applyProject(application).enqueue(object : Callback<ApplicationResponse> {
+                                override fun onResponse(call: Call<ApplicationResponse>, response: Response<ApplicationResponse>) {
+                                    if (response.isSuccessful) {
+                                        println("RESOPONSE")
+                                    } else {
+                                        println("Fa")
+                                    }
+                                }
+
+                                override fun onFailure(call: Call<ApplicationResponse>, t: Throwable) {
+                                    println("Failure")
+                                }
+                            })
+
+                        },
                         shape = RoundedCornerShape(size = 6.dp),
                         colors = ButtonDefaults.buttonColors(Color(0xFF130160)),
                         modifier = Modifier
@@ -277,25 +299,25 @@ fun ProjectDetailScreen(projectName: String) {
     else{}
 }
 
-fun getdetailproject(projectName : String, ctx : Context, projectList : MutableList<Project>){
+fun getdetailproject(projectName : String, ctx : Context, projectList : MutableList<ProjectResponse>){
     println(projectName)
     var gson = GsonBuilder().setLenient().create()
     val retrofit = Retrofit.Builder()
-        .baseUrl("https://7349-192-249-19-234.ngrok-free.app") // API의 베이스 URL을 설정합니다
+        .baseUrl("http://192.168.0.2:8080/") // API의 베이스 URL을 설정합니다
         .addConverterFactory(ScalarsConverterFactory.create())
         .addConverterFactory(GsonConverterFactory.create(gson)) // 문자열 응답을 처리하기 위해 ScalarsConverterFactory를 사용합니다
         .build()
     val apiService = retrofit.create(ApiService::class.java)
-    val call : Call<ArrayList<Project>> = apiService.detailproject(projectName)
-    call!!.enqueue(object : Callback<ArrayList<Project>?> {
+    val call : Call<ArrayList<ProjectResponse>> = apiService.detailproject(projectName)
+    call!!.enqueue(object : Callback<ArrayList<ProjectResponse>?> {
         override fun onResponse(
-            call: Call<ArrayList<Project>?>,
-            response: Response<ArrayList<Project>?>
+            call: Call<ArrayList<ProjectResponse>?>,
+            response: Response<ArrayList<ProjectResponse>?>
         ) {
             // on below line we are checking if response is successful.
             if (response.isSuccessful) {
                 // on below line we are creating a new list
-                var lst: ArrayList<Project> = ArrayList()
+                var lst: ArrayList<ProjectResponse> = ArrayList()
 
                 // on below line we are passing
                 // our response to our list
@@ -311,10 +333,12 @@ fun getdetailproject(projectName : String, ctx : Context, projectList : MutableL
             }
         }
 
-        override fun onFailure(call: Call<ArrayList<Project>?>, t: Throwable) {
+        override fun onFailure(call: Call<ArrayList<ProjectResponse>?>, t: Throwable) {
             // displaying an error message in toast
             println("FAIL")
         }
+
+
     })
 }
 fun getImageResourceForFront(front: String): Int {

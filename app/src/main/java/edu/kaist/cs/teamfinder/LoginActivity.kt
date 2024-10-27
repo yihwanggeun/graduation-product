@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
@@ -73,6 +74,8 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
+import com.google.gson.JsonSyntaxException
 import edu.kaist.cs.teamfinder.screens.HomeScreen
 import edu.kaist.cs.teamfinder.ui.theme.TeamFinderTheme
 import okhttp3.ResponseBody
@@ -88,7 +91,7 @@ lateinit var mGoogleSignInClient: GoogleSignInClient
 lateinit var resultLauncher : ActivityResultLauncher<Intent>
 var gson = GsonBuilder().setLenient().create()
 val retrofit = Retrofit.Builder()
-    .baseUrl("https://7349-192-249-19-234.ngrok-free.app") // API의 베이스 URL을 설정합니다
+    .baseUrl("http://192.168.0.2:8080/") // API의 베이스 URL을 설정합니다
     .addConverterFactory(ScalarsConverterFactory.create())
     .addConverterFactory(GsonConverterFactory.create(gson)) // 문자열 응답을 처리하기 위해 ScalarsConverterFactory를 사용합니다
     .build()
@@ -121,7 +124,7 @@ class LoginActivity : ComponentActivity() {
                         startDestination = LoginRoute.Login.name
                     ) {
                         composable(route = LoginRoute.Login.name) {
-                            Login(name = "Kaist", navController = navController)
+                            Login(name = "", navController = navController)
                         }
                         composable(route = LoginRoute.TestLogin.name) {
                             TestLogin(navController = navController)
@@ -306,21 +309,32 @@ fun TestLogin(navController: NavHostController) {
                         apiService.checkUser(email, password).enqueue(object : Callback<ResponseBody> {
                             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                                 if (response.isSuccessful) {
-                                    val result = response.body()?.string()
-                                    println("check Success")
-                                    println(result)
-                                    if (result == "[]") {
-                                        println("no data")
-                                    } else {
-                                        println("data")
-                                        val gson = Gson()
-                                        val user = gson.fromJson(result, Array<User>::class.java)
-                                        val fullname = user[0].fullname
-                                        if (fullname != null) {
-                                            Globals.globalUser = fullname
+                                    val json = response.body()?.string()
+
+                                    try {
+                                        // Parse the response as UserResponse
+                                        val userResponse = Gson().fromJson(json, UserResponse::class.java)
+
+                                        // Check if results are not empty and retrieve the first user
+                                        val user = userResponse.results.firstOrNull()
+                                        if (user?.fullname != null) {
+                                            Globals.globalUser = user.fullname
+                                            Toast.makeText(context, "Login successful!", Toast.LENGTH_SHORT).show()
+                                            navController.navigate(LoginRoute.MainScreen.name)
+                                        } else {
+                                            Toast.makeText(context, "Login failed: User data is incomplete", Toast.LENGTH_LONG).show()
                                         }
-                                        navController.navigate(LoginRoute.MainScreen.name)
+                                    } catch (e: JsonSyntaxException) {
+                                        e.printStackTrace()
+                                        Toast.makeText(context, "Failed to parse login response", Toast.LENGTH_LONG).show()
                                     }
+                                } else {
+                                    val errorMessage = when (response.code()) {
+                                        401 -> "Invalid email or password"
+                                        500 -> "Server error"
+                                        else -> "Login failed: ${response.message()}"
+                                    }
+                                    Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
                                 }
                             }
 
@@ -364,7 +378,7 @@ fun TestLogin(navController: NavHostController) {
                         val givenName = account?.givenName.toString()
                         val displayName = account?.displayName.toString()
                         val photoUrl = account?.photoUrl.toString()
-                        val password = null
+                        val password = "test"
                         val userData : User = User(email,password,displayName,photoUrl)
                         println("Here?")
                         println(userData)
@@ -380,7 +394,9 @@ fun TestLogin(navController: NavHostController) {
                                     val createdUser: String? = response.body()
                                     println("SUCCESS")
                                     println(response.body())
+                                    navController.navigate(LoginRoute.MainScreen.name)
                                     mGoogleSignInClient.signOut()
+
                                     // Handle the created user object as needed
                                 } else {
                                     // Error occurred while creating the user
@@ -958,3 +974,5 @@ fun PreviewTestCreateAccountScreen() {
         CreateAccount(navController = navController)
     }
 }
+
+

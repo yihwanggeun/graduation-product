@@ -60,6 +60,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import edu.kaist.cs.teamfinder.Globals
 import edu.kaist.cs.teamfinder.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -331,6 +332,8 @@ private fun handleSignInResult(task: Task<GoogleSignInAccount>, onSignInResult: 
     try {
         val account = task.getResult(ApiException::class.java)
         // 로그인이 성공했을 때 처리할 로직을 작성하세요.
+        Globals.globalEmail = account.email.toString()
+        Globals.globalUser = account.displayName.toString()
         onSignInResult(true)
         Log.d("GoogleSignInSuccess", account.email!!)
     } catch (e: ApiException) {

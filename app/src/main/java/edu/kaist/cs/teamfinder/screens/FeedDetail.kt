@@ -145,8 +145,7 @@ fun FeedDetail(feedNum: Int) {
                             verticalArrangement = Arrangement.SpaceEvenly,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(text = "하나")
-                            Text(text = "둘")
+
                         }
                     }
                 }
@@ -162,7 +161,7 @@ fun FeedDetail(feedNum: Int) {
 fun getFeedDetail(feedNum: Int, ctx: Context, feedList: MutableList<Feed>) {
     var gson = GsonBuilder().setLenient().create()
     val retrofit = Retrofit.Builder()
-        .baseUrl("https://7349-192-249-19-234.ngrok-free.app") // API의 베이스 URL을 설정합니다
+        .baseUrl("http://192.168.0.2:8080/") // API의 베이스 URL을 설정합니다
         .addConverterFactory(ScalarsConverterFactory.create())
         .addConverterFactory(GsonConverterFactory.create(gson)) // 문자열 응답을 처리하기 위해 ScalarsConverterFactory를 사용합니다
         .build()

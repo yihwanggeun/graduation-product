@@ -18,6 +18,9 @@ interface ApiService {
     @POST("/createProject") // Replace with the actual endpoint path to create a user
     fun createProject(@Body project: Project): Call<Project>
 
+    @POST("/applyProject")
+    fun applyProject(@Body application: ProjectApplication): Call<ApplicationResponse>
+
     @GET("/checkUser")
     fun checkUser(
         @Query("email") email: String,
@@ -32,10 +35,15 @@ interface ApiService {
     @GET("/detailproject")
     fun detailproject(
         @Query("projectName") projectName: String,
-    ): Call<ArrayList<Project>>
+    ): Call<ArrayList<ProjectResponse>>
+
 
     @GET("/allproject")
     fun allproject(): Call<ArrayList<Project>>
+
+
+    @POST("createfeed")
+    fun createFeed(@Body feed: FeedCreate): Call<FeedResponse>
 
     @GET("/allfeed")
     fun getAllFeed(): Call<ArrayList<Feed>>
@@ -45,3 +53,28 @@ interface ApiService {
         @Query("post_id") feedID: Int,
     ): Call<ArrayList<Feed>>
 }
+
+
+data class FeedCreate(
+    val title: String,
+    val content: String,
+    val author: String,
+    val name: String
+)
+
+data class FeedResponse(
+    val message: String,
+    val feed_id: Int
+)
+
+// 필요한 데이터 클래스들
+data class ProjectApplication(
+    val project_id: Int,
+    val applicant_email: String,
+    val message: String
+)
+
+data class ApplicationResponse(
+    val message: String,
+    val application_id: Int
+)
