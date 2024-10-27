@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">TeamFinder</string>
+    <string name="title_activity_messages">MessagesActivity</string>
+    <string name="title_activity_chat">ChatActivity</string>
+    <string name="stream_api_key">t2gj4tqh7c97</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="retrofit_api_base_url">https://75fb-192-249-19-234.ngrok-free.app/</string>
+</resources>

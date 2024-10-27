@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "588617249643",
+    "project_id": "teamfinder-e9df8",
+    "storage_bucket": "teamfinder-e9df8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:588617249643:android:a516b96b1f5009b214522e",
+        "android_client_info": {
+          "package_name": "edu.kaist.cs.teamfinder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "588617249643-7ktp6tfbe2irl75r7p8k320e8bd0e0th.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.kaist.cs.teamfinder",
+            "certificate_hash": "3d9fd44d57fb633eba8095948af12e87405fe445"
+          }
+        },
+        {
+          "client_id": "588617249643-ceh9lbh86jjf9gl0q89lmo90rhs29fnf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-28_yEZhdyN_4X5AH68Dd339s-DuByWs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "588617249643-ceh9lbh86jjf9gl0q89lmo90rhs29fnf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
